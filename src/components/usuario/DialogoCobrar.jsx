@@ -1,6 +1,6 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
+import React, { useState } from 'react';
+import { Button, Dialog, FormControl, InputAdornment, InputLabel, OutlinedInput, Stack } from '@mui/material';
+
 import ListItemText from '@mui/material/ListItemText';
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
@@ -9,29 +9,31 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
+
+import { Close as CloseIcon } from '@mui/icons-material';
+
 import Slide from '@mui/material/Slide';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog() {
-    const [open, setOpen] = React.useState(false);
+export default function FullScreenDialog(props) {
+    const { open, handleClose, setOpen, total } = props;
+    const [recibido, setRecibido] = useState(0.0);
+    const [cambio, setCambio] = useState(0);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    const handleOnChangeRecibido = (e) => {
+        setCambio(e.target.value - total);
+    }
 
-    const handleClose = () => {
+
+    const handleGuardar = () => {
         setOpen(false);
-    };
-
+        alert('alert')
+    }
     return (
         <div>
-            <Button variant="outlined" onClick={handleClickOpen}>
-                Open full-screen dialog
-            </Button>
             <Dialog
                 fullScreen
                 open={open}
@@ -49,25 +51,34 @@ export default function FullScreenDialog() {
                             <CloseIcon />
                         </IconButton>
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                            Sound
+                            Ticket
                         </Typography>
-                        <Button autoFocus color="inherit" onClick={handleClose}>
-                            save
+                        <Button autoFocus color="inherit" onClick={handleGuardar}>
+                            Guardar
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <List>
-                    <ListItem button>
-                        <ListItemText primary="Phone ringtone" secondary="Titania" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem button>
-                        <ListItemText
-                            primary="Default notification ringtone"
-                            secondary="Tethys"
-                        />
-                    </ListItem>
-                </List>
+                <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="center">
+                    <Typography variant="h3">Total: </Typography>
+                    <Typography variant="h6">$ {total} </Typography>
+                </Stack>
+
+                <FormControl sx={{ m: 1 }}>
+                    <InputLabel htmlFor="outlined-adornment-amount">Recibido</InputLabel>
+                    <OutlinedInput
+                        id="outlined-adornment-amount"
+                        startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                        label="Recibido"
+                        type="number"
+                        onChange={handleOnChangeRecibido}
+                    />
+                </FormControl>
+                <Typography>Su cambio es: {cambio} </Typography>
+
+                <Stack direction="row" spacing={2} justifyContent="center" alignItems="center">
+                    <Button variant='contained'>Cancelar</Button>
+                    <Button variant='contained'>Cobrar</Button>
+                </Stack>
             </Dialog>
         </div>
     );
