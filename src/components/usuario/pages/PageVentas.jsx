@@ -1,7 +1,8 @@
+// Salidas
 import React, { useState } from 'react';
 import { Container, Button, Stack, TextField, Autocomplete, Divider, Chip } from '@mui/material';
 
-import Tabla from './tablaventa';
+import Tabla from '../tablaventa';
 
 const Venta = () => {
     // productosBD viene de Base de datos
