@@ -7,8 +7,8 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import VerifiedIcon from '@mui/icons-material/Verified';
 
-import Busqueda from '../components/Busqueda';
-import Tabla from '../components/Tabla';
+import Busqueda from '../../components/admin/Busqueda';
+import Tabla from '../../components/admin/Tabla';
 
 const columnas = [
     {

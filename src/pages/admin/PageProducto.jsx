@@ -3,8 +3,8 @@ import React from 'react';
 import BadgeIcon from '@mui/icons-material/Badge';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 
-import Busqueda from '../components/Busqueda';
-import Tabla from '../components/Tabla';
+import Busqueda from '../../components/admin/Busqueda';
+import Tabla from '../../components/admin/Tabla';
 
 const columnas = [
     {

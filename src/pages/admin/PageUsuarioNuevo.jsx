@@ -8,15 +8,39 @@ const options = ['Usuario', 'Administrador'];
 const Pagenuevo = (props) => {
     const { URL } = props;
 
+    const [nombre, setNombre] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [direccion, setDireccion] = useState('');
+
+    const handleOnChangeNombre = (e) => { setNombre(e.target.value) };
+    const handleOnChangeTelefono = (e) => { setTelefono(e.target.value) };
+    const handleOnChangeDireccion = (e) => { setDireccion(e.target.value) };
+
     let navigate = useNavigate();
 
     const [value, setValue] = useState(options[0]);
     const [inputValue, setInputValue] = useState('');
 
-    const handleOnClickGuargar = () => {
-        alert('guardar en BD y rediccionar a usuarios');
-        navigate("/usuarios", { replace: true });
+    const handleOnClickGuargar = async () => {
+
+
+        if (inputValue !== '') {// hace las cosas
+            const opciones = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descripcion: nombre, rol: inputValue, telefono: telefono, direccion: direccion, estatus: true })
+            }
+            const response = await fetch(`${URL}`, opciones);
+            const datos = await response.json();
+
+            if (datos.mensaje) alert(datos.mensaje);
+            navigate("/usuarios", { replace: true });
+
+        } else {
+            alert('no puede estar vacio el rol')
+        }
     }
+
     return (
         <div>
             {URL}
@@ -25,9 +49,9 @@ const Pagenuevo = (props) => {
                 spacing={{ xs: 1, sm: 2, md: 4 }}
                 justifyContent='space-evenly'
             >
-                <TextField id="outlined-basic" label="Nombre" variant="outlined" />
-                <TextField id="outlined-basic" label="Telefono" variant="outlined" />
-                <TextField id="outlined-basic" label="Direccion" variant="outlined" />
+                <TextField id="outlined-basic" label="Nombre" variant="outlined" onChange={handleOnChangeNombre} />
+                <TextField id="outlined-basic" label="Telefono" variant="outlined" onChange={handleOnChangeTelefono} />
+                <TextField id="outlined-basic" label="Direccion" variant="outlined" onChange={handleOnChangeDireccion} />
             </Stack>
 
             <Box m={2}>

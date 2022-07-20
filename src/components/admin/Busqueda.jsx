@@ -1,38 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Stack, Typography, Box, Paper, Divider, InputBase, IconButton } from '@mui/material';
-import { Search as SearchIcon, Save as SaveIcon, BusinessCenterSharp } from '@mui/icons-material';
+import { Search as SearchIcon, Save as SaveIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 
 const Busqueda = (props) => {
-    const { titulo, URL, icono, busqueda, fila } = props;
+    const { titulo, icono, busqueda, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar } = props;
     const placeholder = `Buscar ${busqueda}`;
     let navegar = useNavigate();
 
-    // On change criterio de busqueda
-    const [criterioBusqueda, setCriterioBusqueda] = useState('');
-
-    // criterioBusqueda === fila.descripcion ? si_secumple : nocumplu
-
     const handleOnChangeCriterioBusqueda = (e) => {
         setCriterioBusqueda(e.target.value);
-        const temporal = [];
-
-        fila.map((usuario) => {
-            let re = new RegExp('ab+c');
-
-            criterioBusqueda === usuario.descripcion ? temporal.push(usuario) : nocumplu
-        })
-        temporal
-
-
     };
-
 
     const handleOnClickGuardar = () => {
         navegar(`/${busqueda}/nuevo`);
     };
-
 
 
     return (
@@ -55,7 +38,7 @@ const Busqueda = (props) => {
                         onChange={handleOnChangeCriterioBusqueda}
                         inputProps={{ 'aria-label': busqueda }}
                     />
-                    <IconButton type="submit" sx={{ p: '10px' }} aria-label="buscar">
+                    <IconButton sx={{ p: '10px' }} aria-label="buscar" onClick={handleOnClickBuscar} >
                         <SearchIcon />
                     </IconButton>
                     <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
