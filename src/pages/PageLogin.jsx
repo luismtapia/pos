@@ -1,11 +1,30 @@
-import React from 'react';
-import { Card, CardActions, CardContent, Button, Avatar, Stack, TextField, InputAdornment, Box, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Card, CardContent, Button, Avatar, Stack, TextField, InputAdornment, Box, Typography, Snackbar, Alert, Slide } from '@mui/material';
 
 import { Person as LoginIcon, Key as PasswordIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
+import { LogIn } from '../auth/ValidarIdentidad';
+import Notificacion from '../components/Notificacion';
+
+
+
 export default function Login(props) {
-    const { auth, usuario, contraseña, setUsuario, setContraseña } = props;
+    const [open, setOpen] = useState(false);
+    const [mensaje, setMensaje] = useState('');
+    const [usuario, setUsuario] = useState('');
+    const [contraseña, setContraseña] = useState('');
+
+    const handleClick = () => {
+        setOpen(true);
+    };
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
 
     let navigate = useNavigate();
     const handleUsuario = (e) => {
@@ -18,13 +37,22 @@ export default function Login(props) {
     const handleRegistrar = () => {
         navigate('/registro', { replace: true });
     }
+
     const handleLogin = () => {
-        //if (auth.permiso === 'permitido')
-        navigate('/inicio', { replace: true });
+        LogIn(usuario, contraseña)
+            .then((response) => {
+                setMensaje(`${response.mensaje} ${response.error}`);
+                setOpen(true);
+
+                if (response.token !== null)
+                    navigate('/inicio', { replace: true });
+            })
+            .catch((error) => { alert('_Hay un error al iniciar sesion') })
+
     }
 
     return (
-        <Stack alignItems='center' >
+        <Stack alignItems='center' mt={4}>
             <Card sx={{ minWidth: 300 }}>
                 <Stack spacing={3} direction='row' m={2} justifyContent='center'>
                     <Avatar sx={{ width: 56, height: 56, bgcolor: 'warning.ligth' }}>
@@ -53,6 +81,8 @@ export default function Login(props) {
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Typography>Olvide mi contraseña</Typography>
             </Box>
+
+            <Notificacion mensaje={mensaje} tipo='error' open={open} handleClose={handleClose} />
         </Stack >
 
     );

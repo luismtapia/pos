@@ -4,10 +4,9 @@ import { Stack, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { Home as InicioIcon, ManageAccounts as UsuarioIcon, Class as CategoriaIcon, Storefront as ProductoIcon, Inventory as ProveedorIcon, ShoppingCartCheckout as VentasIcon, AddShoppingCart as ComprasIcon, Verified as MarcaIcon } from '@mui/icons-material';
 
 export default function Menu(props) {
-    const { auth } = props;
+    const { rol, path } = props;
 
-
-    const [value, setValue] = useState('inicio');
+    const [value, setValue] = useState(path);
 
     const handleChange = (event, nuevoValor) => {
         setValue(nuevoValor);
@@ -98,7 +97,7 @@ export default function Menu(props) {
     return (
         <Stack direction='row' justifyContent='center'>
             {
-                auth.rol === 'admin' ? <MenuAdmin /> : <MenuUsuario />
+                rol === 'Administrador' ? <MenuAdmin /> : <MenuUsuario />
             }
 
         </Stack>

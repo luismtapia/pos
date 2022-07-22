@@ -1,21 +1,35 @@
 import { Stack } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+// componentes
+import Menu from '../components/Menu';
 import Tarjeta from '../components/Card';
 
+// utils
+import { ValidateSession } from '../auth/ValidarIdentidad';
+import { getLocalStorage } from '../auth/LocalStorage';
+import { key_rol } from '../auth/config';
 
 const Inicio = (props) => {
-    const { auth } = props;
+
     let navigate = useNavigate();
     // total vendido
     // mas vendido
     useEffect(() => {
-        if (auth.permiso === 'denegado') {
-            navigate('/login', { replace: true });
-        }
+        ValidateSession()
+            .then((response) => {
+                if (response.token === null) {
+                    navigate('/login', { replace: true });
+                }
+            })
+            .catch((error) => { });
+
+
     }, []);
+
     return (
         <div>
+            <Menu rol={getLocalStorage(key_rol)} path='inicio' />
             <Stack m={2} spacing={{ xs: 1, sm: 2, md: 4 }}
                 direction={{ xs: 'column', sm: 'row' }} justifyContent='space-around' >
                 <Tarjeta imagen='https://www.alexmedina.net/wp-content/uploads/2019/12/javascript.png' titulo='Producto' contenido='Limones' valor='500' info='mas vendido' />

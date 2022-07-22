@@ -3,17 +3,26 @@ import { Avatar, Button, Stack, Typography } from '@mui/material';
 import LogoIcon from '@mui/icons-material/Diamond';
 import { useNavigate } from 'react-router-dom';
 
+import { ValidateSession } from '../auth/ValidarIdentidad';
+import { getLocalStorage } from '../auth/LocalStorage';
+import { key_permiso } from '../auth/config';
+
 const PagePOS = (props) => {
-    const { auth } = props;
+
     const frase_dia = 'Hazlo mejor cada día';
     let navigate = useNavigate();
 
     const handleComenzar = () => {
-        if (auth.permiso === 'denegado') {
-            navigate('/login', { replace: true });
-        } else {
-            navigate('/inicio', { replace: true });
-        }
+        ValidateSession().then((sesion) => {
+            if (sesion.token === null) {
+                navigate('/login', { replace: true });
+            } else {
+                navigate('/inicio', { replace: true });
+            }
+        }).catch((error) => {
+            alert('Hubo un error al validar la sesion')
+            console.log(error);
+        });
     }
 
     return (

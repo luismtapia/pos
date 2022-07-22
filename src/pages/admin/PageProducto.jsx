@@ -5,6 +5,10 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 
 import Busqueda from '../../components/admin/Busqueda';
 import Tabla from '../../components/admin/Tabla';
+import Menu from '../../components/Menu';
+
+import { getLocalStorage } from '../../auth/LocalStorage';
+import { key_rol } from '../../auth/config';
 
 const columnas = [
     {
@@ -80,6 +84,7 @@ const Pageproductos = () => {
 
     return (
         <>
+            <Menu rol={getLocalStorage(key_rol)} path='proveedores' />
             <Busqueda icono={<StorefrontIcon />} titulo='Productos' busqueda='producto' URL='/productos' />
             <Tabla titulo='Productos' columnas={columnas} filas={filas} />
         </>

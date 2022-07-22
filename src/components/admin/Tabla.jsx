@@ -270,7 +270,11 @@ export default function Tabla(props) {
                                                         (typeof (fila[columna.id]) === 'number') ?
                                                             <TableCell align='right'>{fila[columna.id]}</TableCell>
                                                             :
-                                                            <TableCell >{fila[columna.id]}</TableCell>
+                                                            <TableCell >
+                                                                {
+                                                                    fila[columna.id] === true ? 'activo' : fila[columna.id]
+                                                                }
+                                                            </TableCell>
                                                     )
 
                                                 })}

@@ -3,6 +3,13 @@ import PersonIcon from '@mui/icons-material/Person';
 
 import Busqueda from '../../components/admin/Busqueda';
 import Tabla from '../../components/admin/Tabla';
+import Menu from '../../components/Menu';
+//utils
+import { ValidateSession } from '../../auth/ValidarIdentidad';
+import { getLocalStorage } from '../../auth/LocalStorage';
+import { key_rol } from '../../auth/config';
+
+const rol = getLocalStorage(key_rol);
 
 const opciones = {
     method: 'GET',
@@ -14,7 +21,19 @@ const columnas = [
         id: 'descripcion',
         numeric: false,
         disablePadding: true,
+        label: 'Descripcion',
+    },
+    {
+        id: 'nombre',
+        numeric: false,
+        disablePadding: true,
         label: 'Nombre',
+    },
+    {
+        id: 'usuario',
+        numeric: false,
+        disablePadding: true,
+        label: 'Usuario',
     },
     {
         id: 'rol',
@@ -44,9 +63,9 @@ const columnas = [
 
 const PageUsuario = (props) => {
     const { URL } = props;
+
     const [filas, setFilas] = useState([]);
     const [criterioBusqueda, setCriterioBusqueda] = useState('');
-    const [nuevaURL, setNuevaURL] = useState(URL);
 
     useEffect(() => {
         if (criterioBusqueda === '')
@@ -67,17 +86,17 @@ const PageUsuario = (props) => {
         setFilas(datos);
     };
 
-    const handleOnClickBuscar = () => {
-        buscarDatos();
-    };
+    const handleOnClickBuscar = () => { buscarDatos(); };
 
     return (
         <div>
+            <Menu rol={rol} path='usuarios' />
             <Busqueda titulo='Usuarios' busqueda='usuario' icono={<PersonIcon />}
                 criterioBusqueda={criterioBusqueda} setCriterioBusqueda={setCriterioBusqueda}
                 handleOnClickBuscar={handleOnClickBuscar}
             />
             <Tabla titulo='Usuarios' columnas={columnas} filas={filas} />
+            {console.log(filas)}
         </div>
     );
 }

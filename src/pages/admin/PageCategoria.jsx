@@ -9,6 +9,10 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 
 import Busqueda from '../../components/admin/Busqueda';
 import Tabla from '../../components/admin/Tabla';
+import Menu from '../../components/Menu';
+
+import { getLocalStorage } from '../../auth/LocalStorage';
+import { key_rol } from '../../auth/config';
 
 const columnas = [
     {
@@ -36,6 +40,7 @@ const PageCategoria = () => {
     // onclick buscar aqui manejar
     return (
         <>
+            <Menu rol={getLocalStorage(key_rol)} path='proveedores' />
             <Busqueda icono={<VerifiedIcon />} titulo='Categorias' busqueda='categoria' URL='/categorias' />
             <Tabla titulo='Categorias' columnas={columnas} filas={filas} />
         </>
