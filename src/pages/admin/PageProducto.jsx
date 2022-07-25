@@ -85,7 +85,7 @@ const Pageproductos = () => {
     return (
         <>
             <Menu rol={getLocalStorage(key_rol)} path='proveedores' />
-            <Busqueda icono={<StorefrontIcon />} titulo='Productos' busqueda='producto' URL='/productos' />
+            <Busqueda icono={<StorefrontIcon />} titulo='Productos' nombre='producto' URL='/productos' />
             <Tabla titulo='Productos' columnas={columnas} filas={filas} />
         </>
     );

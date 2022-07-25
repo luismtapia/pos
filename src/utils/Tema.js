@@ -1,10 +1,17 @@
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 
+const modo = (mode) => {
+    // mode: 'dark',
+    //     mode: 'light',
+    return mode;
+}
+
 const MiTema = createTheme({
     status: {
         danger: '#FF4842',
     },
     palette: {
+
         primary: {
             lighter: '#C8FACD',
             light: '#5BE584',

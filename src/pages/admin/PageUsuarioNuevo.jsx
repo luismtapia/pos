@@ -1,20 +1,35 @@
-import { TextField, Autocomplete, Stack, Box, Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Done as DoneIcon, ArrowBack as AtrasIcon } from '@mui/icons-material';
+import { TextField, Autocomplete, Stack, Box, Button, Typography, Chip, Tooltip, IconButton } from '@mui/material';
 
+import LayoutNuevo from '../../components/PaperCard';
+import Notificacion from '../../components/Notificacion';
 
 const options = ['Usuario', 'Administrador'];
 
 const Pagenuevo = (props) => {
     const { URL } = props;
 
+    const [open, setOpen] = useState(false);
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
+
     const [nombre, setNombre] = useState('');
     const [telefono, setTelefono] = useState('');
     const [direccion, setDireccion] = useState('');
+    const [usuario, setUsuario] = useState('');
+    const [contrasena, setContrasena] = useState('');
 
     const handleOnChangeNombre = (e) => { setNombre(e.target.value) };
     const handleOnChangeTelefono = (e) => { setTelefono(e.target.value) };
     const handleOnChangeDireccion = (e) => { setDireccion(e.target.value) };
+    const handleOnChangeUsuario = (e) => { setUsuario(e.target.value) };
+    const handleOnChangeContrasena = (e) => { setContrasena(e.target.value) };
 
     let navigate = useNavigate();
 
@@ -22,13 +37,11 @@ const Pagenuevo = (props) => {
     const [inputValue, setInputValue] = useState('');
 
     const handleOnClickGuargar = async () => {
-
-
         if (inputValue !== '') {// hace las cosas
             const opciones = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ descripcion: nombre, rol: inputValue, telefono: telefono, direccion: direccion, estatus: true })
+                body: JSON.stringify({ descripcion: nombre, usuario: usuario, password: contrasena, rol: inputValue, telefono: telefono, direccion: direccion, estatus: true })
             }
             const response = await fetch(`${URL}`, opciones);
             const datos = await response.json();
@@ -41,41 +54,73 @@ const Pagenuevo = (props) => {
         }
     }
 
-    return (
-        <div>
-            {URL}
-            <Stack m={2}
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={{ xs: 1, sm: 2, md: 4 }}
+    const handleAtras = () => {
+        navigate(-1);
+    }
+
+    const contenido = (
+        <Stack>
+            <Stack mt={1} direction='row' justifyContent='center'>
+                <Typography variant='h4' color="primary">Nuevo usuario</Typography>
+            </Stack>
+            <Stack m={2} mt={3}
+                spacing={{ xs: 2, sm: 2, md: 4 }}
                 justifyContent='space-evenly'
             >
                 <TextField id="outlined-basic" label="Nombre" variant="outlined" onChange={handleOnChangeNombre} />
-                <TextField id="outlined-basic" label="Telefono" variant="outlined" onChange={handleOnChangeTelefono} />
                 <TextField id="outlined-basic" label="Direccion" variant="outlined" onChange={handleOnChangeDireccion} />
             </Stack>
-
-            <Box m={2}>
-                <Autocomplete
-                    value={value}
-                    onChange={(event, newValue) => {
-                        setValue(newValue);
-                    }}
-                    inputValue={inputValue}
-                    onInputChange={(event, newInputValue) => {
-                        setInputValue(newInputValue);
-                    }}
-                    id="controllable-states-demo"
-                    options={options}
-                    sx={{ width: 300 }}
-                    renderInput={(params) => <TextField {...params} label="Rol" />}
-                />
-            </Box>
-            usuario estara activo
-            <Stack direction='row' justifyContent='flex-end' spacing={2} mr={3} >
-                <Button onClick={handleOnClickGuargar}>Guardar</Button>
+            <Stack m={2} mt={2}
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={{ xs: 2, sm: 2, md: 4 }}
+            >
+                <TextField id="outlined-basic" label="Usuario" variant="outlined" onChange={handleOnChangeUsuario} />
+                <TextField id="outlined-basic" label="Contraseña" variant="outlined" onChange={handleOnChangeContrasena} />
+                <TextField id="outlined-basic" label="Telefono" variant="outlined" onChange={handleOnChangeTelefono} />
+            </Stack>
+            <Stack direction='row' justifyContent='flex-start' >
+                <Box m={2} >
+                    <Autocomplete
+                        value={value}
+                        onChange={(event, newValue) => {
+                            setValue(newValue);
+                            if (newValue === 'Administrador')
+                                setOpen(true);
+                        }}
+                        inputValue={inputValue}
+                        onInputChange={(event, newInputValue) => {
+                            setInputValue(newInputValue);
+                        }}
+                        id="rol"
+                        options={options}
+                        sx={{ minWidth: 245 }}
+                        renderInput={(params) => <TextField {...params} label="Rol" />}
+                    />
+                </Box>
+            </Stack>
+            <Stack direction='row' justifyContent='flex-start' spacing={2} m={2} >
+                <Tooltip title='Usuario estara activo despues de crear'>
+                    <Chip color="info" size="small" icon={<DoneIcon />} label='Activo' />
+                </Tooltip>
             </Stack>
 
-        </div>
+            <Stack direction='row' justifyContent='flex-end' spacing={2} m={3} >
+                <Button onClick={handleOnClickGuargar}>Guardar</Button>
+            </Stack>
+        </Stack>
+    );
+
+    return (
+        <Box mt={2}>
+            <Box ml={2}>
+                <IconButton onClick={handleAtras} color='secondary'>
+                    <AtrasIcon />
+                </IconButton>
+            </Box>
+
+            <LayoutNuevo contenido={contenido} />
+            <Notificacion open={open} mensaje='Si añades este usuario como administrador tendra todos los PERMISOS' tipo='warning' handleClose={handleClose} />
+        </Box>
     );
 }
 

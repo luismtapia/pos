@@ -4,6 +4,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import Busqueda from '../../components/admin/Busqueda';
 import Tabla from '../../components/admin/Tabla';
 import Menu from '../../components/Menu';
+import Cargando from '../../components/Cargando';
+import PaperCard from '../../components/PaperCard';
+
 //utils
 import { ValidateSession } from '../../auth/ValidarIdentidad';
 import { getLocalStorage } from '../../auth/LocalStorage';
@@ -16,13 +19,8 @@ const opciones = {
     headers: { 'Content-Type': 'application/json' }
 }
 
+
 const columnas = [
-    {
-        id: 'descripcion',
-        numeric: false,
-        disablePadding: true,
-        label: 'Descripcion',
-    },
     {
         id: 'nombre',
         numeric: false,
@@ -49,21 +47,16 @@ const columnas = [
     }
 ];
 
-// const filas = [
-//     { id: 1, descripcion: 'Otro', rol: 'user', estatus: true },
-//     { id: 2, descripcion: 'Columba', rol: 'user', estatus: true },
-//     { id: 3, descripcion: 'Carlos', rol: 'user', estatus: true },
-//     { id: 4, descripcion: 'Aurora', rol: 'admin', estatus: true },
-//     { id: 5, descripcion: 'Anna', rol: 'user', estatus: true },
-//     { id: 6, descripcion: 'Cuca', rol: 'user', estatus: true },
-//     { id: 7, descripcion: 'Alejandro', rol: 'admin', estatus: true },
-//     { id: 8, descripcion: 'Alejandra', rol: 'user', estatus: true },
-
-// ];
-
+const datosBusqueda = {
+    titulo: 'Usuarios',
+    nombre: 'usuario',
+    path: 'nuevo',
+    icono: <PersonIcon />,
+}
 const PageUsuario = (props) => {
     const { URL } = props;
 
+    const [isLoading, setIsLoading] = useState(true);
     const [filas, setFilas] = useState([]);
     const [criterioBusqueda, setCriterioBusqueda] = useState('');
 
@@ -78,6 +71,7 @@ const PageUsuario = (props) => {
         const response = await fetch(URL, opciones);
         const datos = await response.json();
         setFilas(datos);
+        setIsLoading(false);
     };
 
     const buscarDatos = async () => {
@@ -88,15 +82,18 @@ const PageUsuario = (props) => {
 
     const handleOnClickBuscar = () => { buscarDatos(); };
 
+    const contenido = (
+        <Tabla titulo='Usuarios' columnas={columnas} filas={filas} />
+    );
+
     return (
         <div>
             <Menu rol={rol} path='usuarios' />
-            <Busqueda titulo='Usuarios' busqueda='usuario' icono={<PersonIcon />}
+            <Busqueda titulo={datosBusqueda.titulo} nombre={datosBusqueda.nombre} path={datosBusqueda.path} icono={datosBusqueda.icono}
                 criterioBusqueda={criterioBusqueda} setCriterioBusqueda={setCriterioBusqueda}
                 handleOnClickBuscar={handleOnClickBuscar}
             />
-            <Tabla titulo='Usuarios' columnas={columnas} filas={filas} />
-            {console.log(filas)}
+            {isLoading ? <Cargando open={isLoading} /> : <PaperCard contenido={contenido} />}
         </div>
     );
 }

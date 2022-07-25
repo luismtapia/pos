@@ -1,21 +1,19 @@
 import React from 'react';
-import { Stack, Typography, Box, Paper, Divider, InputBase, IconButton } from '@mui/material';
-import { Search as SearchIcon, Save as SaveIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { Stack, Typography, Box, Paper, Divider, InputBase, IconButton, Tooltip } from '@mui/material';
+import { Search as SearchIcon, Save as SaveIcon } from '@mui/icons-material';
 
 
 const Busqueda = (props) => {
-    const { titulo, icono, busqueda, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar } = props;
-    const placeholder = `Buscar ${busqueda}`;
+    const { titulo, icono, nombre, path, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar } = props;
+    const placeholder = `Buscar ${nombre}`;
     let navegar = useNavigate();
 
     const handleOnChangeCriterioBusqueda = (e) => {
         setCriterioBusqueda(e.target.value);
     };
 
-    const handleOnClickGuardar = () => {
-        navegar(`/${busqueda}/nuevo`);
-    };
+    const handleOnClickGuardar = () => { navegar(`/${nombre}/${path}`); };
 
 
     return (
@@ -28,23 +26,32 @@ const Busqueda = (props) => {
                     component="form"
                     sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
                 >
-                    <IconButton sx={{ p: '10px' }} aria-label="icono">
-                        {icono}
-                    </IconButton>
+                    <Tooltip title={nombre}>
+                        <IconButton sx={{ p: '10px' }} aria-label="icono">
+                            {icono}
+                        </IconButton>
+                    </Tooltip>
+
                     <InputBase
                         sx={{ ml: 1, flex: 1 }}
                         placeholder={placeholder}
                         value={criterioBusqueda}
                         onChange={handleOnChangeCriterioBusqueda}
-                        inputProps={{ 'aria-label': busqueda }}
+                        inputProps={{ 'aria-label': nombre }}
                     />
-                    <IconButton sx={{ p: '10px' }} aria-label="buscar" onClick={handleOnClickBuscar} >
-                        <SearchIcon />
-                    </IconButton>
+                    <Tooltip title={placeholder}>
+                        <IconButton sx={{ p: '10px' }} aria-label="buscar" onClick={handleOnClickBuscar} >
+                            <SearchIcon />
+                        </IconButton>
+                    </Tooltip>
+
                     <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                    <IconButton color="primary" sx={{ p: '10px' }} aria-label="guardar" onClick={handleOnClickGuardar}>
-                        <SaveIcon />
-                    </IconButton>
+                    <Tooltip title="Guardar">
+                        <IconButton color="primary" sx={{ p: '10px' }} aria-label="guardar" onClick={handleOnClickGuardar}>
+                            <SaveIcon />
+                        </IconButton>
+                    </Tooltip>
+
                 </Paper>
             </Stack>
         </>

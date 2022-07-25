@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 
-import { Box, Table, TableBody, TableCell, Switch, FormControlLabel, Tooltip, IconButton, Checkbox, Paper, Typography, Toolbar, TableSortLabel, TableRow, TablePagination, TableHead, TableContainer } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon, FilterList as FilterListIcon } from '@mui/icons-material';
+import { Box, Table, TableBody, TableCell, Switch, FormControlLabel, Tooltip, IconButton, Checkbox, Paper, Typography, Toolbar, TableSortLabel, TableRow, TablePagination, TableHead, TableContainer, Chip } from '@mui/material';
+import { Check as CheckIcon, Close as CloseIcon, Delete as DeleteIcon, Edit as EditIcon, FilterList as FilterListIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
 function descendingComparator(a, b, orderBy) {
@@ -93,8 +93,19 @@ TablaHead.propTypes = {
     columnas: PropTypes.array.isRequired
 };
 
+// Encabezado de la tabla
+
+
 const TablaToolbar = (props) => {
-    const { numSelected, titulo } = props;
+    const { numSelected, titulo, idSelected } = props;
+
+    const handleClickActionDelete = () => {
+        alert(`Eliminar ${numSelected} ${titulo} ? ${idSelected}`);
+        console.log(idSelected);
+    }
+    const handleClickActionEdit = () => {
+        alert(`Editar ${numSelected} ${titulo} ?`);
+    }
 
     return (
         <Toolbar sx={{
@@ -113,7 +124,7 @@ const TablaToolbar = (props) => {
                     variant="subtitle1"
                     component="div"
                 >
-                    {numSelected} seleccionados
+                    {numSelected} {titulo} seleccionados
                 </Typography>
             ) : (
                 <Typography
@@ -128,7 +139,7 @@ const TablaToolbar = (props) => {
 
             {numSelected === 1 ? (
                 <Tooltip title="Editar">
-                    <IconButton>
+                    <IconButton onClick={handleClickActionEdit}>
                         <EditIcon />
                     </IconButton>
                 </Tooltip>
@@ -136,7 +147,7 @@ const TablaToolbar = (props) => {
 
             {numSelected > 0 ? (
                 <Tooltip title="Eliminar">
-                    <IconButton>
+                    <IconButton onClick={handleClickActionDelete}>
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
@@ -157,10 +168,10 @@ TablaToolbar.propTypes = {
 
 export default function Tabla(props) {
     const { titulo, columnas, filas } = props;
-
+    const [idSelected, setIdSelected] = useState([]);
 
     const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('descripcion');
+    const [orderBy, setOrderBy] = useState('nombre');
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [dense, setDense] = useState(true);
@@ -174,23 +185,28 @@ export default function Tabla(props) {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = filas.map((n) => n.descripcion);
+            const newSelecteds = filas.map((n) => n.nombre);
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
     };
 
-    const handleClick = (event, name) => {
+    const handleClick = (event, name, id) => {
         const selectedIndex = selected.indexOf(name);
+
         let newSelected = [];
+        let newIdSelected = [];
 
         if (selectedIndex === -1) {
             newSelected = newSelected.concat(selected, name);
+            newIdSelected = newIdSelected.concat(selected, id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
+            // newIdSelected = newIdSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
             newSelected = newSelected.concat(selected.slice(0, -1));
+            // newIdSelected = newIdSelected.concat(selected.slice(0, -1));
         } else if (selectedIndex > 0) {
             newSelected = newSelected.concat(
                 selected.slice(0, selectedIndex),
@@ -199,6 +215,8 @@ export default function Tabla(props) {
         }
 
         setSelected(newSelected);
+        // id
+        setIdSelected(newIdSelected);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -220,10 +238,14 @@ export default function Tabla(props) {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filas.length) : 0;
 
+    const handleCdel = () => {
+        alert("");
+    };
+
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
-                <TablaToolbar numSelected={selected.length} titulo={titulo} />
+                <TablaToolbar numSelected={selected.length} titulo={titulo} idSelected={idSelected} />
                 <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
@@ -243,13 +265,14 @@ export default function Tabla(props) {
                             {
                                 stableSort(filas, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((fila, index) => {
-                                        const isItemSelected = isSelected(fila.descripcion); //podemos cambiar a id
+                                        const isItemSelected = isSelected(fila.nombre); //podemos cambiar a id
+                                        //setIdSelected(fila._id);
                                         const labelId = `id-${index}`;
 
                                         return (
                                             <TableRow
                                                 hover
-                                                onClick={(event) => handleClick(event, fila.descripcion)} //podemos cambiar a id
+                                                onClick={(event) => handleClick(event, fila.nombre, fila._id)} //podemos cambiar a id
                                                 role="checkbox"
                                                 aria-checked={isItemSelected}
                                                 tabIndex={-1}
@@ -266,37 +289,43 @@ export default function Tabla(props) {
                                                     />
                                                 </TableCell>
                                                 {columnas.map((columna) => {
+
+                                                    const Renderizado = () => {
+                                                        let codigo = '';
+                                                        if (fila[columna.id] === true) {
+                                                            codigo = <CheckIcon />;
+                                                        } else if (fila[columna.id] === false) {
+                                                            codigo = <CloseIcon />;
+                                                        } else {
+                                                            codigo = < >{fila[columna.id]}</>;
+
+                                                        }
+                                                        return codigo;
+                                                    }
                                                     return (
                                                         (typeof (fila[columna.id]) === 'number') ?
-                                                            <TableCell align='right'>{fila[columna.id]}</TableCell>
+                                                            <TableCell component="th"
+                                                                id={labelId}
+                                                                scope="row"
+                                                                padding="none"
+                                                                align='right'>{fila[columna.id]}</TableCell>
                                                             :
                                                             <TableCell >
                                                                 {
-                                                                    fila[columna.id] === true ? 'activo' : fila[columna.id]
+                                                                    <Renderizado />
                                                                 }
                                                             </TableCell>
                                                     )
 
                                                 })}
-                                                {/* <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell
-                                                    component="th"
-                                                    id={labelId}
-                                                    scope="row"
-                                                    padding="none"
-                                                >
-                                                    {fila.descripcion}
+                                                <TableCell align="right">
+                                                    <Tooltip title="Eliminar">
+                                                        <IconButton onClick={handleCdel} >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </TableCell>
 
-                                                <TableCell align="right">acciones buttons en selected</TableCell> */}
                                             </TableRow>
                                         );
                                     }) // fin map

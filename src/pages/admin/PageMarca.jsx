@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import VerifiedIcon from '@mui/icons-material/Verified';
 
 import Busqueda from '../../components/admin/Busqueda';
 import Tabla from '../../components/admin/Tabla';
 import Menu from '../../components/Menu';
+import Cargando from '../../components/Cargando';
+import PaperCard from '../../components/PaperCard';
 
 import { getLocalStorage } from '../../auth/LocalStorage';
-import { key_rol } from '../../auth/config';
+import { key_rol, key_token } from '../../auth/config';
+
+const tokenLocal = getLocalStorage(key_token);
+
+const opciones = {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${tokenLocal}`
+    }
+}
 
 const columnas = [
     {
@@ -41,14 +53,53 @@ const filas = [
 
 ];
 
-const Pagemarca = () => {
-    // const [busqueda, setBusqueda] = useState(''); // criterio
-    // onclick buscar aqui manejar
+const datosBusqueda = {
+    titulo: 'Marcas',
+    nombre: 'marca',
+    path: 'nueva',
+    icono: <VerifiedIcon />,
+}
+
+const Pagemarca = (props) => {
+    const { URL } = props;
+    const [isLoading, setIsLoading] = useState(true);
+    const [filas, setFilas] = useState([]);
+    const [criterioBusqueda, setCriterioBusqueda] = useState('');
+
+    useEffect(() => {
+        if (criterioBusqueda === '')
+            obtenerDatos();
+        else
+            buscarDatos();
+    }, [criterioBusqueda]);
+
+    const obtenerDatos = async () => {
+        const response = await fetch(URL, opciones);
+        const datos = await response.json();
+        setFilas(datos);
+        setIsLoading(false);
+    };
+
+    const buscarDatos = async () => {
+        const response = await fetch(`${URL}/buscar/${criterioBusqueda}`, opciones);
+        const datos = await response.json();
+        setFilas(datos);
+    };
+
+    const handleOnClickBuscar = () => { buscarDatos(); };
+
+    const contenido = (
+        <Tabla titulo={datosBusqueda.titulo} columnas={columnas} filas={filas} />
+    );
+
     return (
         <>
-            <Menu rol={getLocalStorage(key_rol)} path='proveedores' />
-            <Busqueda icono={<VerifiedIcon />} titulo='Marcas' busqueda='marca' URL='/marcas' />
-            <Tabla titulo='Marcas' columnas={columnas} filas={filas} />
+            <Menu rol={getLocalStorage(key_rol)} path='marcas' />
+            <Busqueda titulo={datosBusqueda.titulo} nombre={datosBusqueda.nombre} path={datosBusqueda.path} icono={datosBusqueda.icono}
+                criterioBusqueda={criterioBusqueda} setCriterioBusqueda={setCriterioBusqueda}
+                handleOnClickBuscar={handleOnClickBuscar}
+            />
+            {isLoading ? <Cargando open={isLoading} /> : <PaperCard contenido={contenido} />}
         </>
     );
 }

@@ -46,7 +46,7 @@ const Pageproveedor = () => {
     return (
         <div>
             <Menu rol={getLocalStorage(key_rol)} path='proveedores' />
-            <Busqueda titulo='Proveedores' busqueda='proveedor' icono={<BadgeIcon />} URL='/proveedores' />
+            <Busqueda titulo='Proveedores' nombre='proveedor' icono={<BadgeIcon />} URL='/proveedores' />
             <Tabla titulo='Proveedores' columnas={columnas} filas={filas} />
         </div>
     );
