@@ -1,6 +1,6 @@
 import { setLocalStorage, getLocalStorage, deleteLocalStorage } from './LocalStorage';
 import { URLSesiones } from '../utils/URLs';
-import { key_permiso, key_rol, key_token, key_user } from './config';
+import { key_nombre, key_rol, key_token, key_user } from './config';
 let usuario = { user: getLocalStorage(key_user), token: getLocalStorage(key_token), rol: getLocalStorage(key_rol) };
 // estatus, nombre, descripcion agregar a local??
 const obtenerDatos = async (ruta, opciones) => {
@@ -33,12 +33,12 @@ const LogIn = async (user, password) => {
 
     // PERSISTENCIA LOCAL
     setLocalStorage(key_rol, resultado.respuesta.rol);
-    setLocalStorage(key_user, resultado.respuesta.user);
+    setLocalStorage(key_user, resultado.respuesta.usuario);
+    setLocalStorage(key_nombre, resultado.respuesta.nombre);
     setLocalStorage(key_token, resultado.respuesta.token);
 
     return usuario;
 };
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MmQ5ZmM0NzAyY2RiMjViOTc3OThjMGEiLCJpYXQiOjE2NTg0NTUxMDMsImV4cCI6MTY1OTMxOTEwM30.G_V7o9oukaeExxDMRzH1i2rSYuF78xyAQns3NQVKIPw
 
 //validar sesion
 const ValidateSession = async () => { // hacer async
@@ -66,6 +66,7 @@ const LogOut = () => {
     usuario.user = '';
     usuario.token = '';
     usuario.rol = '';
+    usuario.nombre = '';
     usuario.mensaje = '';
     usuario.error = '';
 
@@ -73,6 +74,7 @@ const LogOut = () => {
     deleteLocalStorage(key_token);
     deleteLocalStorage(key_user);
     deleteLocalStorage(key_rol);
+    deleteLocalStorage(key_nombre);
 };
 
 export { ValidateSession, LogIn, LogOut };

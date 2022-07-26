@@ -26,14 +26,14 @@ import PageMarcaNueva from './pages/admin/PageMarcaNueva';
 import PageInicio from './pages/PageInicio';
 import PageLogin from './pages/PageLogin';
 import PageSignUp from './pages/PageSignUp';
+import PagePerfil from './pages/PagePerfil';
 import PagePOS from './pages/PagePOS';
 import PageNotFound from './pages/PageNotFound';
 import AppBarMenu from './components/AppBarMenu';
-import MenuOtro from './components/Menu2';
 
 // otros
 import MiTema from './utils/Tema';
-import { URLMarcas, URLUsuarios, URLProductos, URLCategorias, URLProveedores } from './utils/URLs';
+import { URLMarcas, URLUsuarios, URLProductos, URLCategorias, URLProveedores, URLSesiones } from './utils/URLs';
 
 function App() {
 
@@ -41,8 +41,7 @@ function App() {
     <ThemeProvider theme={MiTema}>
       <Router basename='/'>
         <div>
-          {/* <AppBarMenu /> */}
-          <MenuOtro />
+          <AppBarMenu />
           <Routes>
             <Route path="/productos" element={<PageProducto URL={URLProductos} />} />
             <Route path="/proveedores" element={<PageProveedor URL={URLProveedores} />} />
@@ -55,10 +54,11 @@ function App() {
             <Route path="/ventas" element={<PageVenta />} />
             <Route path="/compras" element={<PageCompra />} />
             <Route path="/inicio" element={<PageInicio />} />
+            <Route path="/perfil" element={<PagePerfil />} />
             <Route path="/" element={<PagePOS />} />
             <Route path="*" element={<PageNotFound />} />
             <Route path="/login" element={<PageLogin />} />
-            <Route path="/registro" element={<PageSignUp />} />
+            <Route path="/registro" element={<PageSignUp URL={URLSesiones} />} />
           </Routes>
         </div>
       </Router >
