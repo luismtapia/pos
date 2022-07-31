@@ -1,13 +1,17 @@
 import { setLocalStorage, getLocalStorage, deleteLocalStorage } from './LocalStorage';
-import { URLSesiones } from '../utils/URLs';
-import { key_nombre, key_rol, key_token, key_user } from './config';
+
+import { URLSesiones, key_nombre, key_rol, key_token, key_user, key_empresa, key_sucursal, opcionesGET } from '../utils/configuracion';
+
 let usuario = { user: getLocalStorage(key_user), token: getLocalStorage(key_token), rol: getLocalStorage(key_rol) };
+//validar y regresar info necesaria
 // estatus, nombre, descripcion agregar a local??
 const obtenerDatos = async (ruta, opciones) => {
     const response = await fetch(`${URLSesiones}/${ruta}`, opciones);
     const datos = await response.json();
     return datos;
 }
+
+
 
 // Iniciar sesion
 const LogIn = async (user, password) => {
@@ -28,6 +32,8 @@ const LogIn = async (user, password) => {
     usuario.user = resultado.respuesta.usuario;
     usuario.token = resultado.respuesta.token;
     usuario.rol = resultado.respuesta.rol;
+    usuario.empresa = resultado.respuesta.empresa;
+    usuario.sucursal = resultado.respuesta.sucursal;
     usuario.mensaje = `Bienvenido ${resultado.respuesta.nombre}`;
     usuario.error = '';
 
@@ -36,24 +42,25 @@ const LogIn = async (user, password) => {
     setLocalStorage(key_user, resultado.respuesta.usuario);
     setLocalStorage(key_nombre, resultado.respuesta.nombre);
     setLocalStorage(key_token, resultado.respuesta.token);
+    setLocalStorage(key_empresa, resultado.respuesta.empresa);
+    setLocalStorage(key_sucursal, resultado.respuesta.sucursal);
 
     return usuario;
 };
+
+//signUp
 
 //validar sesion
 const ValidateSession = async () => { // hacer async
     const tokenLocal = getLocalStorage(key_token); //token local
     if (!tokenLocal) return usuario;
 
-    const opciones = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tokenLocal}` }
-    }
-    const validar = await obtenerDatos('validar', opciones); // token Api
+    const validar = await obtenerDatos('validar', opcionesGET()); // token Api
 
     const tokenRemota = validar.token;
 
     // si tokens son diferentes no esta logeado
+    // cambiar a si es valido token??????? y i/playload
     if (tokenLocal !== tokenRemota) {
         LogOut();
     }

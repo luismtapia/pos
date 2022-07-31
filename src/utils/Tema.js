@@ -63,7 +63,8 @@ const MiTema = createTheme({
             200: '#F4F6F8',
             300: '#DFE3E8',
             main: '#F9FAFB',
-        }
+        },
+        // background: { paper: 'rgb(5, 30, 52)' },
     },
 });
 

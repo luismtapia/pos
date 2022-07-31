@@ -6,28 +6,25 @@ import { Box, Table, TableBody, TableCell, Switch, FormControlLabel, Tooltip, Ic
 import { Check as CheckIcon, Close as CloseIcon, Delete as DeleteIcon, Edit as EditIcon, FilterList as FilterListIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
-function descendingComparator(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
+function comparadorDescendente(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) { return -1; }
+    if (b[orderBy] > a[orderBy]) { return 1; }
     return 0;
 }
 
-function getComparator(order, orderBy) {
+function getComparador(order, orderBy) {
     return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
+        ? (a, b) => comparadorDescendente(a, b, orderBy)
+        : (a, b) => -comparadorDescendente(a, b, orderBy);
 }
 
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
+function stableSort(array, comparador) {
     const stabilizedThis = array.map((el, index) => [el, index]);
+
     stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
+        const order = comparador(a[0], b[0]);
         if (order !== 0) {
             return order;
         }
@@ -36,6 +33,7 @@ function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 }
 
+// Encabezado de la tabla
 function TablaHead(props) {
     const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, columnas } = props;
 
@@ -93,18 +91,34 @@ TablaHead.propTypes = {
     columnas: PropTypes.array.isRequired
 };
 
-// Encabezado de la tabla
 
+// acciones
+const obtenerDatos = async (URL, id) => {
+    const opciones = {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    }
+    const response = await fetch(`${URL}/${id}`, opciones);
+    const datos = await response.json();
+    return datos;
+}
 
 const TablaToolbar = (props) => {
-    const { numSelected, titulo, idSelected } = props;
+    const { numSelected, titulo, idSeleccionado, seleccionado, URL, handleClickOpenDialogoEditar, setID } = props;
 
     const handleClickActionDelete = () => {
-        alert(`Eliminar ${numSelected} ${titulo} ? ${idSelected}`);
-        console.log(idSelected);
+        alert(`Eliminar ${numSelected} ${titulo} ? ${seleccionado}`);
+
     }
-    const handleClickActionEdit = () => {
-        alert(`Editar ${numSelected} ${titulo} ?`);
+    const handleClickActionEdit = async () => {
+        handleClickOpenDialogoEditar();
+        setID(idSeleccionado);
+
+
+        //const datosViejos = await obtenerDatos(URL, idSeleccionado[0]);
+
+        //console.log(datosViejos);
+
     }
 
     return (
@@ -164,11 +178,13 @@ const TablaToolbar = (props) => {
 
 TablaToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
+    titulo: PropTypes.string.isRequired,
 };
 
 export default function Tabla(props) {
-    const { titulo, columnas, filas } = props;
-    const [idSelected, setIdSelected] = useState([]);
+    const { titulo, columnas, filas, URL, handleClickOpenDialogoEditar, setID } = props;
+
+    const [idSeleccionado, setIdSeleccionado] = useState([]);
 
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('nombre');
@@ -187,36 +203,41 @@ export default function Tabla(props) {
         if (event.target.checked) {
             const newSelecteds = filas.map((n) => n.nombre);
             setSelected(newSelecteds);
+            const nuevosIdsSelecionados = filas.map((n) => n._id);
+            setIdSeleccionado(nuevosIdsSelecionados);
             return;
         }
         setSelected([]);
+        setIdSeleccionado([]);
     };
 
     const handleClick = (event, name, id) => {
         const selectedIndex = selected.indexOf(name);
-
         let newSelected = [];
-        let newIdSelected = [];
+        let newIdSeleccionado = [];
 
         if (selectedIndex === -1) {
             newSelected = newSelected.concat(selected, name);
-            newIdSelected = newIdSelected.concat(selected, id);
+            newIdSeleccionado = newIdSeleccionado.concat(idSeleccionado, id); //error
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
-            // newIdSelected = newIdSelected.concat(selected.slice(1));
+            newIdSeleccionado = newIdSeleccionado.concat(idSeleccionado.slice(1));
         } else if (selectedIndex === selected.length - 1) {
             newSelected = newSelected.concat(selected.slice(0, -1));
-            // newIdSelected = newIdSelected.concat(selected.slice(0, -1));
+            newIdSeleccionado = newIdSeleccionado.concat(idSeleccionado.slice(0, -1));
         } else if (selectedIndex > 0) {
             newSelected = newSelected.concat(
                 selected.slice(0, selectedIndex),
                 selected.slice(selectedIndex + 1),
             );
+            newIdSeleccionado = newIdSeleccionado.concat(
+                idSeleccionado.slice(0, selectedIndex),
+                idSeleccionado.slice(selectedIndex + 1),
+            );
         }
 
         setSelected(newSelected);
-        // id
-        setIdSelected(newIdSelected);
+        setIdSeleccionado(newIdSeleccionado);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -234,18 +255,19 @@ export default function Tabla(props) {
 
     const isSelected = (name) => selected.indexOf(name) !== -1;
 
-    // Avoid a layout jump when reaching the last page with empty rows.
+    // evita a layout jump when reaching the last page with empty rows.
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filas.length) : 0;
-
-    const handleCdel = () => {
-        alert("");
-    };
 
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
-                <TablaToolbar numSelected={selected.length} titulo={titulo} idSelected={idSelected} />
+                <TablaToolbar numSelected={selected.length} titulo={titulo}
+                    idSeleccionado={idSeleccionado} seleccionado={selected}
+                    URL={URL}
+                    handleClickOpenDialogoEditar={handleClickOpenDialogoEditar}
+                    setID={setID}
+                />
                 <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
@@ -263,10 +285,11 @@ export default function Tabla(props) {
                         />
                         <TableBody>
                             {
-                                stableSort(filas, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                stableSort(filas, getComparador(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((fila, index) => {
                                         const isItemSelected = isSelected(fila.nombre); //podemos cambiar a id
-                                        //setIdSelected(fila._id);
+
+                                        //setIdSeleccionado(fila._id);
                                         const labelId = `id-${index}`;
 
                                         return (
@@ -318,14 +341,6 @@ export default function Tabla(props) {
                                                     )
 
                                                 })}
-                                                <TableCell align="right">
-                                                    <Tooltip title="Eliminar">
-                                                        <IconButton onClick={handleCdel} >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
-
                                             </TableRow>
                                         );
                                     }) // fin map

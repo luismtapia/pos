@@ -11,8 +11,6 @@ import { AccountCircle, Visibility, VisibilityOff, PermContactCalendar, Person, 
 import { minHeight } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import PaperCard from '../components/PaperCard'
-import { key_token } from '../auth/config';
-import { getLocalStorage } from '../auth/LocalStorage';
 
 export default function PageSignUp(props) {
     const { URL } = props;

@@ -5,7 +5,8 @@ import { Search as SearchIcon, Save as SaveIcon } from '@mui/icons-material';
 
 
 const Busqueda = (props) => {
-    const { titulo, icono, nombre, path, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar } = props;
+    const { titulo, icono, nombre, path, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar, handleClickOpenDialog } = props;
+
     const placeholder = `Buscar ${nombre}`;
     let navegar = useNavigate();
 
@@ -18,7 +19,7 @@ const Busqueda = (props) => {
 
     return (
         <>
-            <Box>
+            <Box mb={2}>
                 <Typography variant='h4'>{titulo}</Typography>
             </Box>
             <Stack spacing={2} direction='row' justifyContent='space-around' alignContent='center'>
@@ -47,7 +48,7 @@ const Busqueda = (props) => {
 
                     <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                     <Tooltip title="Guardar">
-                        <IconButton color="primary" sx={{ p: '10px' }} aria-label="guardar" onClick={handleOnClickGuardar}>
+                        <IconButton color="primary" sx={{ p: '10px' }} aria-label="guardar" onClick={handleClickOpenDialog}>
                             <SaveIcon />
                         </IconButton>
                     </Tooltip>

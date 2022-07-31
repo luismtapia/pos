@@ -2,38 +2,31 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 
-// user
+//-----------------------------PAGINAS EMPLEADO-------------------------------------
 import PageVenta from './pages/user/PageVentas';
 import PageCompra from './pages/user/PageCompras';
 
-// admin
-import PageMarca from './pages/admin/PageMarca';
-import PageUsuario from './pages/admin/PageUsuario';
-import PageProducto from './pages/admin/PageProducto';
-import PageProveedor from './pages/admin/PageProveedor';
-import PageCategoria from './pages/admin/PageCategoria';
+//-----------------------------PAGINAS ADMIN-------------------------------------
+import PageMarcas from './pages/admin/PageMarcas';
+import PageUsuarios from './pages/admin/PageUsuarios';
+import PageProductos from './pages/admin/PageProductos';
+import PageProveedores from './pages/admin/PageProveedores';
+import PageCategorias from './pages/admin/PageCategorias';
 
-// import PageReportes from './pages/admin/PageReportes';
 
-import PageUsuarioNuevo from './pages/admin/PageUsuarioNuevo';
-// import PageProveedor from './pages/admin/PageProveedor';
-import PageCategoriaNueva from './pages/admin/PageCategoriaNueva';
-import PageMarcaNueva from './pages/admin/PageMarcaNueva';
-// import PageReportes from './pages/admin/PageReportes';
-// import PageProductoNuevo from './pages/admin/PageProductoNuevo';
-
-// comun
+//-----------------------------PAGINAS COMUNES-------------------------------------
 import PageInicio from './pages/PageInicio';
 import PageLogin from './pages/PageLogin';
 import PageSignUp from './pages/PageSignUp';
 import PagePerfil from './pages/PagePerfil';
+import PageCuenta from './pages/PageCuenta';
 import PagePOS from './pages/PagePOS';
 import PageNotFound from './pages/PageNotFound';
 import AppBarMenu from './components/AppBarMenu';
 
 // otros
 import MiTema from './utils/Tema';
-import { URLMarcas, URLUsuarios, URLProductos, URLCategorias, URLProveedores, URLSesiones } from './utils/URLs';
+import { URLMarcas, URLUsuarios, URLProductos, URLCategorias, URLProveedores, URLSesiones } from './utils/configuracion';
 
 function App() {
 
@@ -43,18 +36,17 @@ function App() {
         <div>
           <AppBarMenu />
           <Routes>
-            <Route path="/productos" element={<PageProducto URL={URLProductos} />} />
-            <Route path="/proveedores" element={<PageProveedor URL={URLProveedores} />} />
-            <Route path="/categorias" element={<PageCategoria URL={URLCategorias} />} />
-            <Route path="/categoria/nueva" element={<PageCategoriaNueva URL={URLCategorias} />} />
-            <Route path="/usuarios" element={<PageUsuario URL={URLUsuarios} />} />
-            <Route path="/usuario/nuevo" element={<PageUsuarioNuevo URL={URLUsuarios} />} />
-            <Route path="/marcas" element={<PageMarca URL={URLMarcas} />} />
-            <Route path="/marca/nueva" element={<PageMarcaNueva URL={URLMarcas} />} />
+            <Route path="/productos" element={<PageProductos URL={URLProductos} />} />
+            <Route path="/proveedores" element={<PageProveedores URL={URLProveedores} />} />
+            <Route path="/categorias" element={<PageCategorias URL={URLCategorias} />} />
+            <Route path="/usuarios" element={<PageUsuarios URL={URLUsuarios} />} />
+            <Route path="/marcas" element={<PageMarcas URL={URLMarcas} />} />
             <Route path="/ventas" element={<PageVenta />} />
             <Route path="/compras" element={<PageCompra />} />
             <Route path="/inicio" element={<PageInicio />} />
-            <Route path="/perfil" element={<PagePerfil />} />
+            {/* menus user */}
+            <Route path="/perfil" element={<PagePerfil URL={URLUsuarios} />} />
+            <Route path="/cuenta" element={<PageCuenta URL={URLUsuarios} />} />
             <Route path="/" element={<PagePOS />} />
             <Route path="*" element={<PageNotFound />} />
             <Route path="/login" element={<PageLogin />} />
@@ -63,7 +55,6 @@ function App() {
         </div>
       </Router >
     </ThemeProvider>
-
   );
 }
 

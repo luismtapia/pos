@@ -46,27 +46,31 @@ export default function Login(props) {
                     </Stack>
                 </Box>
 
-                <Box mt={5}>
-                    <Stack spacing={3} direction='column' m={2} justifyContent='center'>
+                <Box mt={4}>
+                    <Stack spacing={3} direction='column' mr={2} ml={2} justifyContent='center'>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <LoginIcon sx={{ color: 'primary.dark', mr: 1, my: 0.5 }} />
-                            <TextField label="Usuario" variant="outlined" onChange={handleUsuario}>Usuario</TextField>
+                            <TextField label="Usuario" variant="standard" onChange={handleUsuario}>Usuario</TextField>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <PasswordIcon sx={{ color: 'primary.dark', mr: 1, my: 0.5 }} />
                             <TextField label="Contraseña" variant="outlined" onChange={handleContraseña}> Contraseña</TextField>
                         </Box>
                     </Stack>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }} p={2}>
+                        <Typography>Olvide mi contraseña</Typography>
+                    </Box>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
                     <Button onClick={handleLogin}>Iniciar sesión</Button>
                 </Box>
-                <Stack direction='row' m={2} justifyContent='flex-end' >
-                    <Button onClick={handleRegistrar}>Registrar</Button>
+                <Stack direction='row' m={1} justifyContent='flex-end' alignItems='center' >
+                    <Typography>¿Aún no tienes cuenta? </Typography>
+                    <Button onClick={handleRegistrar}>Crear cuenta</Button>
                 </Stack>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }} p={2}>
-                <Typography>Olvide mi contraseña</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }} p={1}>
+                <Typography>PoS</Typography>
             </Box>
         </>
     );

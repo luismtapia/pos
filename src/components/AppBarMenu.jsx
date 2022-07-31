@@ -8,18 +8,23 @@ import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import { Badge, Menu, MenuItem, Button, Typography, ListItem, ListItemButton, ListItemText, Toolbar, ListItemIcon } from '@mui/material';
+import { Badge, Menu, MenuItem, Button, Typography, ListItem, ListItemButton, ListItemText, Toolbar, ListItemIcon, Tooltip, Fade, ListItemAvatar, Avatar, Stack } from '@mui/material';
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
+import Logout from '@mui/icons-material/Logout';
+import Settings from '@mui/icons-material/Settings';
+import Person from '@mui/icons-material/Person';
+
 import { LogOut } from '../auth/ValidarIdentidad';
+import { eliminaAcentos } from '../utils/Librerias';
 
 
 const drawerWidth = 240;
-const navItems = ['Inicio', 'Sucursales', 'Usuarios', 'Categorías', 'Marcas', 'Proveedores', 'Artículos', 'Ventas', 'Compras'];
+const navItems = ['Inicio', 'Categorías', 'Marcas', 'Proveedores', 'Productos', 'Ventas', 'Compras'];
 const navItemsUser = ['Inicio', 'Ventas', 'Compras'];
 
 function DrawerAppBar(props) {
@@ -29,7 +34,9 @@ function DrawerAppBar(props) {
     let navigate = useNavigate();
 
     const handleClickRoute = (item) => (event) => {
-        navigate(`/${item}`, { replace: true });
+        const minusculas = item.toLowerCase();
+        const ruta = eliminaAcentos(minusculas);
+        navigate(`/${ruta}`, { replace: true });
     }
 
     // Menu hamburguesa mobile
@@ -66,15 +73,19 @@ function DrawerAppBar(props) {
         </Box>
     );
 
-    // Menus despegables
-    const [anchorEl, setAnchorEl] = useState(null);
-    const menuOpen = Boolean(anchorEl);
+    // ------------------------------------------------------------------------------
+    // ----------------------------MENUS DESPEGABLES---------------------------------
+    // ------------------------------------------------------------------------------
+    // ----------------------------MENU PERFIL---------------------------------------
+    const [anchorElPerfil, setAnchorElPerfil] = useState(null);
+    const menuOpenPerfil = Boolean(anchorElPerfil);
     const handleMenuPerfilOpen = (event) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorElPerfil(event.currentTarget);
     };
     const handleMenuPerfilClose = () => {
-        setAnchorEl(null);
+        setAnchorElPerfil(null);
     };
+
     const handleMenuPerfilLogOut = () => {
         LogOut();
         handleMenuPerfilClose();
@@ -84,23 +95,233 @@ function DrawerAppBar(props) {
     const handleMenuPerfil = () => {
         handleMenuPerfilClose();
         navigate(`/perfil`, { replace: true });
-
     };
-
-
+    const handleMenuCuenta = () => {
+        handleMenuPerfilClose();
+        navigate(`/cuenta`, { replace: true });
+    };
     const renderMenuPerfil = (
         <Menu
             id="basic-menu"
-            anchorEl={anchorEl}
-            open={menuOpen}
+            anchorEl={anchorElPerfil}
+            open={menuOpenPerfil}
             onClose={handleMenuPerfilClose}
             MenuListProps={{
                 'aria-labelledby': 'basic-button',
             }}
+            PaperProps={{
+                elevation: 0,
+                sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                    },
+                    '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                    },
+                },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-            <MenuItem onClick={handleMenuPerfil}>Perfil</MenuItem>
-            <MenuItem onClick={handleMenuPerfilClose}>My cuenta sucursales</MenuItem>
-            <MenuItem onClick={handleMenuPerfilLogOut}>Cerrar Sesión</MenuItem>
+            <MenuItem onClick={handleMenuPerfil}>
+                <ListItemIcon>
+                    <Person fontSize="small" />
+                </ListItemIcon>
+                Perfil
+            </MenuItem>
+            <MenuItem onClick={handleMenuCuenta}>
+                <ListItemIcon>
+                    <Settings fontSize="small" />
+                </ListItemIcon>
+                Cuenta
+            </MenuItem>
+            <MenuItem onClick={handleMenuPerfilLogOut}>
+                <ListItemIcon>
+                    <Logout fontSize="small" />
+                </ListItemIcon>
+                Cerrar Sesión
+            </MenuItem>
+        </Menu>
+    );
+
+    // ----------------------------MENU NOTIFICACIONES---------------------------------------
+    const [anchorElNotificacion, setAnchorElNotificacion] = useState(null);
+    const menuOpenNotificacion = Boolean(anchorElNotificacion);
+    const handleMenuNotificacionOpen = (event) => {
+        setAnchorElNotificacion(event.currentTarget);
+    };
+    const handleMenuNotificacionClose = () => {
+        setAnchorElNotificacion(null);
+    };
+    const renderMenuNotificaciones = (
+        <Menu
+            id="basic-menu"
+            anchorEl={anchorElNotificacion}
+            open={menuOpenNotificacion}
+            onClose={handleMenuNotificacionClose}
+            MenuListProps={{
+                'aria-labelledby': 'basic-button',
+            }}
+            PaperProps={{
+                elevation: 0,
+                sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                    },
+                    '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                    },
+                },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+
+        >
+            <MenuItem onClick={handleMenuNotificacionClose} >
+                <ListItem alignItems="flex-start" >
+                    <ListItemAvatar>
+                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary="Brunch this weekend?"
+                        secondary="otro txto"
+                    />
+                </ListItem>
+
+            </MenuItem>
+            <Divider variant="inset" component="li" />
+            <MenuItem onClick={handleMenuNotificacionClose}>
+                <Typography variant="inherit" noWrap>
+                    A very long text that overflows
+                </Typography>
+            </MenuItem>
+            <Divider variant="inset" component="li" />
+            <Stack onClick={handleMenuNotificacionClose}>
+                <Stack direction='row' justifyContent='space-between'>
+                    <Settings fontSize="small" />
+                    <Typography>hols</Typography>
+                </Stack>
+            </Stack>
+            <Divider variant="inset" component="li" />
+            <MenuItem onClick={handleMenuNotificacionClose}>
+                <ListItemIcon>
+                    <Typography>Titulo</Typography>
+                </ListItemIcon>
+                close
+            </MenuItem>
+        </Menu>
+    );
+
+    // ----------------------------MENU MENSAJES---------------------------------------
+    const [anchorElMensaje, setAnchorElMensaje] = useState(null);
+    const menuOpenMensaje = Boolean(anchorElMensaje);
+    const handleMenuMensajeOpen = (event) => {
+        setAnchorElMensaje(event.currentTarget);
+    };
+    const handleMenuMensajeClose = () => {
+        setAnchorElMensaje(null);
+    };
+    const renderMenuMensajes = (
+        <Menu
+            id="basic-menu"
+            anchorEl={anchorElMensaje}
+            open={menuOpenMensaje}
+            onClose={handleMenuMensajeClose}
+            MenuListProps={{
+                'aria-labelledby': 'basic-button',
+            }}
+            PaperProps={{
+                elevation: 0,
+                sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                        width: 32,
+                        height: 32,
+                        ml: -0.5,
+                        mr: 1,
+                    },
+                    '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                    },
+                },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+
+        >
+            <MenuItem onClick={handleMenuMensajeClose} >
+                <ListItem alignItems="flex-start" >
+                    <ListItemAvatar>
+                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary="Brunch this weekend?"
+                        secondary="otro txto"
+                    />
+                </ListItem>
+
+            </MenuItem>
+            <Divider variant="inset" component="li" />
+            <MenuItem onClick={handleMenuMensajeClose}>
+                <Typography variant="inherit" noWrap>
+                    A very long text that overflows
+                </Typography>
+            </MenuItem>
+            <Divider variant="inset" component="li" />
+            <MenuItem onClick={handleMenuMensajeClose}>
+                <ListItemIcon>
+                    <Settings fontSize="small" />
+                </ListItemIcon>
+                Cuenta
+            </MenuItem>
+            <Divider variant="inset" component="li" />
+            <MenuItem onClick={handleMenuMensajeClose}>
+                <ListItemIcon>
+                    <Logout fontSize="small" />
+                </ListItemIcon>
+                Ver más
+            </MenuItem>
         </Menu>
     );
 
@@ -140,32 +361,47 @@ function DrawerAppBar(props) {
                     <Box sx={{ flexGrow: 1 }} />
                     {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}> */}
                     <Box sx={{ display: 'flex' }}>
-                        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="error">
-                                <MailIcon />
-                            </Badge>
-                        </IconButton>
-                        <IconButton
-                            size="large"
-                            aria-label="show 17 new notifications"
-                            color="inherit"
-                        >
-                            <Badge badgeContent={17} color="error">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            id="basic-button"
-                            aria-controls={menuOpen ? 'basic-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={menuOpen ? 'true' : undefined}
-                            onClick={handleMenuPerfilOpen}
-                            color="inherit"
-                        >
-                            <AccountCircle />
-                        </IconButton>
+                        <Tooltip title="Mensajes">
+                            <IconButton size="large" aria-label="show 4 new mails"
+                                aria-controls={menuOpenMensaje ? 'basic-menu' : undefined}
+                                aria-expanded={menuOpenMensaje ? 'true' : undefined}
+                                onClick={handleMenuMensajeOpen}
+                                color="inherit">
+                                <Badge badgeContent={4} color="error">
+                                    <MailIcon />
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Notificaciones">
+                            <IconButton
+                                size="large"
+                                id="basic-button"
+                                aria-label="mostrar notificaciones"
+                                aria-haspopup="true"
+                                aria-controls={menuOpenNotificacion ? 'basic-menu' : undefined}
+                                aria-expanded={menuOpenNotificacion ? 'true' : undefined}
+                                onClick={handleMenuNotificacionOpen}
+                                color="inherit"
+                            >
+                                <Badge badgeContent={17} color="error">
+                                    <NotificationsIcon />
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Configuraciones">
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                id="basic-button"
+                                aria-controls={menuOpenPerfil ? 'basic-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={menuOpenPerfil ? 'true' : undefined}
+                                onClick={handleMenuPerfilOpen}
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                        </Tooltip>
                     </Box>
 
                 </Toolbar>
@@ -195,7 +431,8 @@ function DrawerAppBar(props) {
             </Box>
             {/* render menus ocultos hasta ser activados */}
             {renderMenuPerfil}
-
+            {renderMenuNotificaciones}
+            {renderMenuMensajes}
         </Box>
     );
 }

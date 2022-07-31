@@ -4,9 +4,6 @@ import LogoIcon from '@mui/icons-material/Diamond';
 import { useNavigate } from 'react-router-dom';
 
 import { ValidateSession } from '../auth/ValidarIdentidad';
-import { getLocalStorage } from '../auth/LocalStorage';
-import { key_permiso } from '../auth/config';
-
 const PagePOS = (props) => {
 
     const frase_dia = 'Hazlo mejor cada día';

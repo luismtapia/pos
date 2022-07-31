@@ -3,10 +3,7 @@ import BadgeIcon from '@mui/icons-material/Badge';
 
 import Busqueda from '../../components/admin/Busqueda';
 import Tabla from '../../components/admin/Tabla';
-import Menu from '../../components/Menu';
 
-import { getLocalStorage } from '../../auth/LocalStorage';
-import { key_rol } from '../../auth/config';
 
 const columnas = [
     {
@@ -45,7 +42,6 @@ const filas = [
 const Pageproveedor = () => {
     return (
         <div>
-            <Menu rol={getLocalStorage(key_rol)} path='proveedores' />
             <Busqueda titulo='Proveedores' nombre='proveedor' icono={<BadgeIcon />} URL='/proveedores' />
             <Tabla titulo='Proveedores' columnas={columnas} filas={filas} />
         </div>

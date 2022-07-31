@@ -10,7 +10,7 @@ const Notificacion = (props) => {
 
     return (
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} TransitionComponent={SlideTransition}>
-            <Alert onClose={handleClose} severity={tipo} sx={{ width: '100%' }}>
+            <Alert variant="filled" onClose={handleClose} severity={tipo} sx={{ width: '100%' }}>
                 {mensaje}
             </Alert>
         </Snackbar>
