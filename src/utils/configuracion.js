@@ -31,8 +31,8 @@ const opcionesPUT = (body) => ({
 
 
 // ENDPOINTS
-// const endpoint = 'https://poszeco-api.herokuapp.com/pos';
-const endpoint = 'http://localhost:4001/pos';
+const endpoint = 'https://poszeco-api.herokuapp.com/pos';
+//const endpoint = 'http://localhost:4001/pos';
 
 const URLMarcas = `${endpoint}/marcas`;
 const URLUsuarios = `${endpoint}/usuarios`;
