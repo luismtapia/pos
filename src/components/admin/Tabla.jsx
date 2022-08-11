@@ -6,6 +6,8 @@ import { Box, Table, TableBody, TableCell, Switch, FormControlLabel, Tooltip, Ic
 import { Check as CheckIcon, Close as CloseIcon, Delete as DeleteIcon, Edit as EditIcon, FilterList as FilterListIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 
+import usePage from '../../hooks/usePage';
+
 function comparadorDescendente(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) { return -1; }
     if (b[orderBy] > a[orderBy]) { return 1; }
@@ -182,7 +184,9 @@ TablaToolbar.propTypes = {
 };
 
 export default function Tabla(props) {
-    const { titulo, columnas, filas, URL, handleClickOpenDialogoEditar, setID } = props;
+    const { titulo, columnas } = usePage();
+
+    const { filas, handleClickOpenDialogoEditar, setID } = props;
 
     const [idSeleccionado, setIdSeleccionado] = useState([]);
 

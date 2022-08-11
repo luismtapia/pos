@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, Badge, Box, Button, Divider, IconButton, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { Edit as EditIcon, Save as SaveIcon } from '@mui/icons-material';
 import StoreIcon from '@mui/icons-material/Store';
@@ -11,14 +12,17 @@ import DialogoEditar from '../components/DialogoEditar';
 
 import Sucursales from './admin/PageSucursales';
 import Usuarios from './admin/PageUsuarios';
-import { URLSucursales } from '../utils/configuracion';
+import { URLSucursales, URLSesiones } from '../utils/configuracion';
 import { ActiveBadge, InactiveBadge } from '../utils/estilos';
 
 import { getData } from '../utils/Librerias';
 import { opcionesGET, opcionesPUT } from '../utils/configuracion';
+import { ValidateSession } from '../auth/ValidarIdentidad';
 
 const PagePerfil = (props) => {
     const { URL } = props;
+    let navigate = useNavigate();
+
     const pestanas = ['Sucursales', 'Usuarios'];
     const componentes = [<Sucursales URL={URLSucursales} />, <Usuarios URL={URL} />];
 
@@ -29,9 +33,27 @@ const PagePerfil = (props) => {
     }, []);
 
     const obtenerUsuario = async () => {
-        const endpoint = `${URL}/62e1a41343b25903a710a62f`;
-        const datos = await getData(endpoint, opcionesGET);
-        setUsuario(datos[0]);
+        const response = await ValidateSession();
+        if (!response.idUsuario) navigate('/login', { replace: true });
+
+        console.log(response);
+        setUsuario(response);
+        // ValidateSession()
+        //     .then((response) => {
+        //         if (!response.idUsuario) {
+        //             navigate('/login', { replace: true });
+        //         }
+
+        //         // setUsuario({
+        //         //     sucursal: response.sucursal,
+        //         //     idSucursal: response.idSucursal
+        //         // });
+        //     })
+        //     .catch((error) => { console.error(error); });
+
+        //const endpoint = `${URL}/${response.idUsuario}`;
+        //const datos = await getData(endpoint, opcionesGET);
+        //setUsuario(datos[0]);
     }
 
     // ----------------------DIALOGO EDITAR----------------------
@@ -148,14 +170,14 @@ const PagePerfil = (props) => {
 
 
                 <Stack justifyContent="flex-start" alignItems="center">
-                    <Typography variant='h5' >empresa</Typography>
+                    <Typography variant='h5' >{usuario.empresa}</Typography>
                     <Typography>{usuario.rol}</Typography>
                 </Stack>
 
             </Stack>
             <Box m={1} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button sx={{ color: 'warning.darker' }} variant="text" onClick={handleClickOpenDialogoCambiarPassword} >Cambiar contraseña</Button>
-                <Typography>sucursal</Typography>
+                <Typography>{usuario.sucursal}</Typography>
             </Box>
             <Divider />
 
@@ -219,8 +241,8 @@ const PagePerfil = (props) => {
     return (
         <div>
             <PaperCard contenido={contenido} />
-            {usuario.rol === 'Propietario' ? <BasicTabs pestanas={pestanas} componentes={componentes} /> : <>compañeros?</>}
-            <BasicTabs pestanas={pestanas} componentes={componentes} />
+            {/* {usuario.rol === 'Propietario' ? <BasicTabs pestanas={pestanas} componentes={componentes} /> : <>compañeros?</>}*/}
+            {/* <BasicTabs pestanas={pestanas} componentes={componentes} /> */}
 
             <DialogoEditar contenido={editar} titulo='Editando tus datos'
                 handleOnClickEditar={handleOnClickEditar}

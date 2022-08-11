@@ -1,107 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Stack, TextField, Typography } from '@mui/material';
+//----------------------------------IMPORTA---------------------------------------
+//--------------------------------------------------------------------------------
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MarcaIcon from '@mui/icons-material/Verified';
-
-import Busqueda from '../../components/admin/Busqueda';
-import Tabla from '../../components/admin/Tabla';
-import PaperCard from '../../components/PaperCard';
-import NotFound from '../../components/NotFound';
+import PageContex from '../../context/PageContext';
+import { getToken, opcionesGET, opcionesPOST, URLMarcas, URLUsuarios } from '../../utils/configuracion';
+import PageCRUD from './PageCRUD';
+import { Box, Stack, TextField, Typography } from '@mui/material';
 import Notificacion from '../../components/Notificacion';
-import PreloaderCard from '../../components/PreloaderCard';
-import DialogoGuardar from '../../components/DialogoGuardar';
-
-import { getLocalStorage } from '../../auth/LocalStorage';
-import { key_rol, key_token } from '../../utils/configuracion';
-
 import { getData } from '../../utils/Librerias';
-import { opcionesGET, opcionesPOST } from '../../utils/configuracion';
 
-const tokenLocal = getLocalStorage(key_token);
+import { ValidateSession } from '../../auth/ValidarIdentidad';
 
-const opciones = {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${tokenLocal}`
-    }
-}
+const PageMarcas = () => {
+    const [usuario, setUsuario] = useState([]);
+    const [criterioInicial, setCriterioInicial] = useState('');
 
-const columnas = [
-    {
-        id: 'nombre',
-        numeric: false,
-        disablePadding: true,
-        label: 'Marca',
-    },
-    {
-        id: 'fecha_alta',
-        numeric: false,
-        disablePadding: false,
-        label: 'Fecha',
-    }
-];
-
-
-
-const datosBusqueda = {
-    titulo: 'Marcas',
-    nombre: 'marca',
-    icono: <MarcaIcon />,
-}
-
-const PageMarca = (props) => {
-    const { URL } = props;
-    const [isLoading, setIsLoading] = useState(true);
-    const [noData, setNoData] = useState(true);
-    const [openNotificacion, setOpenNotificacion] = useState(false);
-    const [mensajeNotificacion, setMensajeNotificacion] = useState('');
-    const handleCloseNotificacion = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenNotificacion(false);
-    };
-
-    const [filas, setFilas] = useState([]);
-    const [criterioBusqueda, setCriterioBusqueda] = useState('');
+    let navigate = useNavigate();
 
     useEffect(() => {
-        if (criterioBusqueda === '')
-            obtenerDatos();
-        else
-            buscarDatos();
-    }, [criterioBusqueda]);
+        verificarSesion();
+    }, []);
 
-    const obtenerDatos = async () => {
-        const datos = await getData(URL, opcionesGET());
-        // setUsuario(datos[0]);
+    const verificarSesion = async () => {
 
-        console.log(datos);
-        if (datos.error) {
-            setMensajeNotificacion(`${datos.mensaje} ${datos.error}`);
-            setOpenNotificacion(true);
-        } else {
-            setFilas(datos);
-            setNoData(false);
-        }
-        setIsLoading(false);
+        ValidateSession()
+            .then((response) => {
+                if (!response.idUsuario) {
+                    navigate('/login', { replace: true });
+                }
 
+                setUsuario({
+                    sucursal: response.sucursal,
+                    idSucursal: response.idSucursal
+                });
+            })
+            .catch((error) => { console.error(error); });
     };
-
-    const buscarDatos = async () => {
-        const response = await fetch(`${URL}/buscar/${criterioBusqueda}`, opciones);
-        const datos = await response.json();
-        setFilas(datos);
-    };
-
-    const handleOnClickBuscar = () => { buscarDatos(); };
 
     // ----------------------DIALOGO GUARDAR----------------------
-
     const [openNotificacionGuardar, setOpenNotificacionGuardar] = useState(false);
     const [openDialogGuardar, setOpenDialogGuardar] = useState(false);
-    const handleCloseDialog = () => { setOpenDialogGuardar(false); };
-    const handleClickOpenDialog = () => { setOpenDialogGuardar(true); };
+    const handleCloseDialogGuardar = () => { setOpenDialogGuardar(false); };
+    const handleClickOpenDialogGuardar = () => { setOpenDialogGuardar(true); };
     const handleCloseNotificacionGuardar = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -116,20 +57,22 @@ const PageMarca = (props) => {
         if (descripcionTextfield === '') {
             setOpenNotificacionGuardar(true);
         } else {
-            const datos = await getData(URL, opcionesPOST({ nombre: descripcionTextfield, idSucursal: 'sucursalid' }));
-            handleCloseDialog();
-            setCriterioBusqueda(descripcionTextfield);
+            const Authorization = getToken();
+            const datos = await getData(URLMarcas, opcionesPOST(Authorization, { nombre: descripcionTextfield, idSucursal: usuario.idSucursal }));
+            handleCloseDialogGuardar();
+            console.log(datos);
+            setCriterioInicial(descripcionTextfield);
         }
     }
 
-    const nuevo = (
+    const crear = (
         <Box>
             <Stack m={2} mt={3}
                 spacing={{ xs: 2, sm: 2, md: 4 }}
                 justifyContent='space-evenly'
             >
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Typography>Sucursal</Typography>
+                    <Typography>{usuario.sucursal}</Typography>
                 </Box>
 
                 <TextField id="descripcion" label="Descripción" variant="outlined" onChange={handleOnChangeDescripcionTextfield} />
@@ -137,33 +80,31 @@ const PageMarca = (props) => {
             <Notificacion open={openNotificacionGuardar} mensaje='Los campos no pueden estar vacios' tipo='warning' handleClose={handleCloseNotificacionGuardar} />
         </Box>
     );
-    const contenido = (
-        <>
-            {
-                noData ? <NotFound /> : <Tabla titulo={datosBusqueda.titulo} columnas={columnas} filas={filas} />
-            }
-        </>
-    );
 
     return (
-        <Box m={1}>
-            <Busqueda titulo={datosBusqueda.titulo} nombre={datosBusqueda.nombre} icono={datosBusqueda.icono}
-                criterioBusqueda={criterioBusqueda} setCriterioBusqueda={setCriterioBusqueda}
-                handleOnClickBuscar={handleOnClickBuscar} handleClickOpenDialog={handleClickOpenDialog}
-            />
-
-            {isLoading ? <PreloaderCard /> : <PaperCard contenido={contenido} />}
-
-            <DialogoGuardar contenido={nuevo} titulo={`Nueva ${datosBusqueda.nombre}`}
+        <PageContex.Provider
+            value={{
+                endpoint: URLMarcas,
+                titulo: 'Marcas',
+                nombre: 'marca',
+                icono: <MarcaIcon />,
+                columnas: [{
+                    id: 'nombre',
+                    numeric: false,
+                    disablePadding: true,
+                    label: 'Marca',
+                }]
+            }}>
+            <PageCRUD contenidoCrear={crear}
                 handleOnClickGuargar={handleOnClickGuargar}
-                handleCloseDialog={handleCloseDialog}
-                open={openDialogGuardar}
+                handleCloseDialogGuardar={handleCloseDialogGuardar}
+                handleClickOpenDialogGuardar={handleClickOpenDialogGuardar}
+                openDialogGuardar={openDialogGuardar}
+                criterioInicial={criterioInicial}
             />
-
-            <Notificacion mensaje={mensajeNotificacion} tipo='error' open={openNotificacion} handleClose={handleCloseNotificacion} />
-
-        </Box >
+            {console.log(usuario)}
+        </PageContex.Provider>
     );
 }
 
-export default PageMarca;
+export default PageMarcas;

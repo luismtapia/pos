@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
+
+import CategoriaIcon from '@mui/icons-material/Class';
 
 //-----------------------------PAGINAS EMPLEADO-------------------------------------
 import PageVenta from './pages/user/PageVentas';
@@ -11,7 +13,7 @@ import PageMarcas from './pages/admin/PageMarcas';
 import PageUsuarios from './pages/admin/PageUsuarios';
 import PageProductos from './pages/admin/PageProductos';
 import PageProveedores from './pages/admin/PageProveedores';
-import PageCategorias from './pages/admin/PageCategorias';
+//import PageCategorias from './pages/admin/PageCategoriasOld';
 
 
 //-----------------------------PAGINAS COMUNES-------------------------------------
@@ -26,7 +28,10 @@ import AppBarMenu from './components/AppBarMenu';
 
 // otros
 import MiTema from './utils/Tema';
-import { URLMarcas, URLUsuarios, URLProductos, URLCategorias, URLProveedores, URLSesiones } from './utils/configuracion';
+import PageContex from './context/PageContext';
+import { URLMarcas, URLUsuarios, URLProductos, URLCategorias, URLProveedores, URLSesiones, key_token } from './utils/configuracion';
+import PageCRUD from './pages/admin/PageCRUD';
+import PageCategorias from './pages/admin/PageCategorias';
 
 function App() {
 
@@ -38,7 +43,7 @@ function App() {
           <Routes>
             <Route path="/productos" element={<PageProductos URL={URLProductos} />} />
             <Route path="/proveedores" element={<PageProveedores URL={URLProveedores} />} />
-            <Route path="/categorias" element={<PageCategorias URL={URLCategorias} />} />
+            <Route path="/categorias" element={<PageCategorias />} />
             <Route path="/usuarios" element={<PageUsuarios URL={URLUsuarios} />} />
             <Route path="/marcas" element={<PageMarcas URL={URLMarcas} />} />
             <Route path="/ventas" element={<PageVenta />} />
@@ -57,5 +62,6 @@ function App() {
     </ThemeProvider>
   );
 }
+
 
 export default App;

@@ -31,7 +31,7 @@ export default function Login(props) {
         LogIn(usuario, contraseña).then((response) => {
             setMensaje(`${response.mensaje} ${response.error}`);
             setOpen(true);
-
+            console.log(response);
             if (response.token !== null) navigate('/inicio', { replace: true });
         }).catch((error) => { alert('_Hay un error al iniciar sesion') })
     };

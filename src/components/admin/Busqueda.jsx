@@ -1,20 +1,22 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { Stack, Typography, Box, Paper, Divider, InputBase, IconButton, Tooltip } from '@mui/material';
-import { Search as SearchIcon, Save as SaveIcon } from '@mui/icons-material';
-
+import { QrCode as SearchIcon, Save as SaveIcon } from '@mui/icons-material';
+import usePage from '../../hooks/usePage';
 
 const Busqueda = (props) => {
-    const { titulo, icono, nombre, path, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar, handleClickOpenDialog } = props;
+    const { titulo, nombre, icono } = usePage();
+    // const { titulo, icono, nombre, path, criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar, handleClickOpenDialog } = props;
+    const { criterioBusqueda, setCriterioBusqueda, handleOnClickBuscar, handleClickOpenDialog } = props;
 
     const placeholder = `Buscar ${nombre}`;
-    let navegar = useNavigate();
+    // let navegar = useNavigate();
 
     const handleOnChangeCriterioBusqueda = (e) => {
         setCriterioBusqueda(e.target.value);
     };
 
-    const handleOnClickGuardar = () => { navegar(`/${nombre}/${path}`); };
+    //const handleOnClickGuardar = () => { navegar(`/${nombre}/${path}`); };
 
 
     return (
@@ -47,8 +49,8 @@ const Busqueda = (props) => {
                     </Tooltip>
 
                     <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                    <Tooltip title="Guardar">
-                        <IconButton color="primary" sx={{ p: '10px' }} aria-label="guardar" onClick={handleClickOpenDialog}>
+                    <Tooltip title="Crear">
+                        <IconButton color="primary" sx={{ p: '10px' }} aria-label="Crear" onClick={handleClickOpenDialog}>
                             <SaveIcon />
                         </IconButton>
                     </Tooltip>

@@ -9,7 +9,6 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 export default function DialogoGuardar(props) {
     const { contenido, titulo, handleOnClickGuargar, handleCloseDialog, open } = props;
-
     return (
         <div>
             <Dialog

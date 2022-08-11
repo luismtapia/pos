@@ -55,6 +55,7 @@ export default function BasicTabs(props) {
             </Box>
             {componentes.map((componente, index) => {
                 const pagina = <>pafina</>;
+
                 return (
                     <TabPanel value={value} index={index} >
                         {componente}

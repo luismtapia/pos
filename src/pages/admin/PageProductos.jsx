@@ -1,29 +1,34 @@
-import React, { useEffect } from 'react';
 
-import BadgeIcon from '@mui/icons-material/Badge';
-import StorefrontIcon from '@mui/icons-material/Storefront';
+//----------------------------------IMPORTA---------------------------------------
+//--------------------------------------------------------------------------------
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, Stack, TextField, Typography } from '@mui/material';
+import ProductoIcon from '@mui/icons-material/Storefront';
 
-import Busqueda from '../../components/admin/Busqueda';
-import Tabla from '../../components/admin/Tabla';
+import PageCRUD from './PageCRUD';
+import Notificacion from '../../components/Notificacion';
+import PageContex from '../../context/PageContext';
 
+import { getToken, opcionesPOST, URLProductos } from '../../utils/configuracion';
 import { getData } from '../../utils/Librerias';
-import { opcionesGET, opcionesPUT } from '../../utils/configuracion';
+import { ValidateSession } from '../../auth/ValidarIdentidad';
 
 const columnas = [
     {
-        id: 'codigo',
+        id: '_id',
         numeric: false,
         disablePadding: true,
         label: 'Código',
     },
     {
-        id: 'descripcion',
+        id: 'nombre',
         numeric: false,
         disablePadding: true,
         label: 'Artículo',
     },
     {
-        id: 'marca',
+        id: 'idMarca',
         numeric: false,
         disablePadding: false,
         label: 'Marca',
@@ -65,36 +70,101 @@ const columnas = [
         label: 'Stock',
     },
     {
-        id: 'categoria',
+        id: 'idCategoria',
         numeric: false,
         disablePadding: false,
         label: 'Categoria',
     }
 ];
 
-const filas = [
-    { id: 1, codigo: '1', descripcion: 'Salsa', marca: 'San Luis', modelo: 'Liquido', codigoBarras: '0654587549598', unidad: 'Litros', precioCompra: 9.00, precioVenta: 18.00, stock: 15, categoria: 'Enlatados' },
-    { id: 2, codigo: '2', descripcion: 'Jitomates', marca: 'San Luis', modelo: 'Liquido', codigoBarras: '0654587549598', unidad: 'Litros', precioCompra: 9.00, precioVenta: 18.00, stock: 12, categoria: 'Refresco' }
-];
 
+const PageProductos = () => {
+    const [usuario, setUsuario] = useState([]);
+    const [criterioInicial, setCriterioInicial] = useState('');
 
-const Pageproductos = (props) => {
-    const { URL } = props;
+    let navigate = useNavigate();
+
+    //--------------------------------AUTENTIFICA-------------------------------------
+    //--------------------------------------------------------------------------------
     useEffect(() => {
-        obtenerDatos();
+        verificarSesion();
     }, []);
 
-    const obtenerDatos = async () => {
+    const verificarSesion = async () => {
+        ValidateSession()
+            .then((response) => {
+                if (!response.idUsuario) {
+                    navigate('/login', { replace: true });
+                }
+                setUsuario({
+                    sucursal: response.sucursal,
+                    idSucursal: response.idSucursal
+                });
+            })
+            .catch((error) => { console.error(error); });
+    };
 
-        const data = await getData(URL, opcionesGET);
-        console.log(data);
+    // ----------------------DIALOGO GUARDAR----------------------
+    const [openNotificacionGuardar, setOpenNotificacionGuardar] = useState(false);
+    const [openDialogGuardar, setOpenDialogGuardar] = useState(false);
+    const handleCloseDialogGuardar = () => { setOpenDialogGuardar(false); };
+    const handleClickOpenDialogGuardar = () => { setOpenDialogGuardar(true); };
+    const handleCloseNotificacionGuardar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenNotificacionGuardar(false);
+    };
+
+    const [descripcionTextfield, setDescripcionTextfield] = useState('');
+    const handleOnChangeDescripcionTextfield = (e) => { setDescripcionTextfield(e.target.value) };
+
+    const handleOnClickGuargar = async () => {
+        if (descripcionTextfield === '') {
+            setOpenNotificacionGuardar(true);
+        } else {
+            const Authorization = getToken();
+            const datos = await getData(URLProductos, opcionesPOST(Authorization, { nombre: descripcionTextfield, idSucursal: usuario.idSucursal }));
+            handleCloseDialogGuardar();
+            console.log(datos);
+            setCriterioInicial(descripcionTextfield);
+        }
     }
+
+    const crear = (
+        <Box>
+            <Stack m={2} mt={3}
+                spacing={{ xs: 2, sm: 2, md: 4 }}
+                justifyContent='space-evenly'
+            >
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Typography>{usuario.sucursal}</Typography>
+                </Box>
+
+                <TextField id="descripcion" label="Descripción" variant="outlined" onChange={handleOnChangeDescripcionTextfield} />
+            </Stack>
+            <Notificacion open={openNotificacionGuardar} mensaje='Los campos no pueden estar vacios' tipo='warning' handleClose={handleCloseNotificacionGuardar} />
+        </Box>
+    );
+
     return (
-        <>
-            <Busqueda icono={<StorefrontIcon />} titulo='Productos' nombre='producto' URL='/productos' />
-            <Tabla titulo='Productos' columnas={columnas} filas={filas} />
-        </>
+        <PageContex.Provider
+            value={{
+                endpoint: URLProductos,
+                titulo: 'Productos',
+                nombre: 'producto',
+                icono: <ProductoIcon />,
+                columnas: columnas
+            }}>
+            <PageCRUD contenidoCrear={crear}
+                handleOnClickGuargar={handleOnClickGuargar}
+                handleCloseDialogGuardar={handleCloseDialogGuardar}
+                handleClickOpenDialogGuardar={handleClickOpenDialogGuardar}
+                openDialogGuardar={openDialogGuardar}
+                criterioInicial={criterioInicial}
+            />
+        </PageContex.Provider>
     );
 }
 
-export default Pageproductos;
+export default PageProductos;
